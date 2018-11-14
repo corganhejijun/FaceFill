@@ -1,3 +1,5 @@
 /datasets/origin
-/src/__pycache__/*.pyc
+*.pyc
 /models/shape_predictor_68_face_landmarks.dat
+/datasets/aligned
+/datasets/train
