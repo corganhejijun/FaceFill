@@ -123,5 +123,5 @@ def headFromDir(inDir, outDir, shape_model, size, faceSize):
             print("file %s can't get face in fullImg" % name)
             continue
         combine = combineImg(fullImg, fullFace)
-        outPath = os.path.join(outDir, str(count) + '.jpg')
+        outPath = os.path.join(outDir, str(count).zfill(6) + '.jpg')
         misc.imsave(outPath, combine)
