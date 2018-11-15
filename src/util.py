@@ -4,6 +4,7 @@ import os
 import dlib
 from scipy import misc
 import numpy as np
+from PIL import Image
 
 def getBound(img, shape):
     xMin = len(img[0])
@@ -20,6 +21,23 @@ def getBound(img, shape):
         if (shape.part(i).y > yMax):
             yMax = shape.part(i).y
     return xMin, xMax, yMin, yMax
+    
+def combineImg(imga, imgb):
+    target = Image.new('RGB', (imga.shape[0]*2, imga.shape[1]))
+    target.paste(Image.fromarray(np.uint8(imga)), (0, 0))
+    target.paste(Image.fromarray(np.uint8(imgb)), (imgb.shape[0] + 1, 0))
+    return target
+
+def getFace(detector, shapePredict, img):
+    dets = detector(img, 1)
+    if (len(dets) == 0):
+        return None, None, None, None
+    det = dets[0]
+    shape = shapePredict(img, det)
+    xmin, xmax, ymin, ymax = getBound(img, shape)
+    if xmin < 0 or xmax < 0 or ymin < 0 or ymax < 0:
+        return None, None, None, None
+    return xmin, xmax, ymin, ymax
 
 def headFromDir(inDir, outDir, shape_model, size, faceSize):
     shapePredict = dlib.shape_predictor(shape_model)
@@ -98,5 +116,12 @@ def headFromDir(inDir, outDir, shape_model, size, faceSize):
         if marginBottom > 0:
             fullImg[(size - marginBottom):size, :, :] = np.tile(np.reshape(fullImg[(size - marginBottom), :, :], (1, size, 3)), (marginBottom, 1, 1))
 
-        outPath = os.path.join(outDir, name)
-        misc.imsave(outPath, fullImg)
+        fullFace = np.zeros((size, size, 3))
+        xminFace, xmaxFace, yminFace, ymaxFace = getFace(detector, shapePredict, fullImg.astype(np.uint8))
+        fullFace[yminFace:ymaxFace, xminFace:xmaxFace, :] = fullImg[yminFace:ymaxFace, xminFace:xmaxFace, :]
+        if xminFace == None:
+            print("file %s can't get face in fullImg" % name)
+            continue
+        combine = combineImg(fullImg, fullFace)
+        outPath = os.path.join(outDir, str(count) + '.jpg')
+        misc.imsave(outPath, combine)
