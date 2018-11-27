@@ -86,12 +86,6 @@ def headFromDir(inDir, outDir, shape_model, size, faceSize, outBleed_x=0, outBle
             top = int(ymin - shortEdge)
             bottom = int(ymax + shortEdge / 2)
 
-        if outBleed_x > 0:
-            left -= outBleed_x
-            right -= outBleed_x
-        if outBleed_y > 0:
-            top -= outBleed_y
-
         fullImg = np.zeros((size, size, 3))
         marginLeft = 0
         if left < 0:
@@ -124,6 +118,19 @@ def headFromDir(inDir, outDir, shape_model, size, faceSize, outBleed_x=0, outBle
 
         fullFace = np.zeros((size, size, 3))
         xminFace, xmaxFace, yminFace, ymaxFace = getFace(detector, shapePredict, fullImg.astype(np.uint8))
+        
+        if outBleed_x > 0:
+            xminFace -= outBleed_x
+            if xminFace < 0:
+                xminFace = 0
+            xmaxFace -= outBleed_x
+            if xmaxFace > fullImg.shape[1]:
+                xmaxFace = fullImg.shape[1]
+        if outBleed_y > 0:
+            yminFace -= outBleed_y
+            if yminFace < 0:
+                yminFace = 0
+
         fullFace[yminFace:ymaxFace, xminFace:xmaxFace, :] = fullImg[yminFace:ymaxFace, xminFace:xmaxFace, :]
         if xminFace == None:
             print("file %s can't get face in fullImg" % name)
