@@ -123,7 +123,7 @@ def headFromDir(inDir, outDir, shape_model, size, faceSize, outBleed_x=0, outBle
             xminFace -= outBleed_x
             if xminFace < 0:
                 xminFace = 0
-            xmaxFace -= outBleed_x
+            xmaxFace += outBleed_x
             if xmaxFace > fullImg.shape[1]:
                 xmaxFace = fullImg.shape[1]
         if outBleed_y > 0:
