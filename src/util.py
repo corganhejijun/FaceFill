@@ -39,7 +39,7 @@ def getFace(detector, shapePredict, img):
         return None, None, None, None
     return xmin, xmax, ymin, ymax
 
-def headFromDir(inDir, outDir, shape_model, size, faceSize):
+def headFromDir(inDir, outDir, shape_model, size, faceSize, outBleed_x=0, outBleed_y=0):
     shapePredict = dlib.shape_predictor(shape_model)
     detector = dlib.get_frontal_face_detector()
     if not os.path.exists(outDir):
@@ -85,6 +85,12 @@ def headFromDir(inDir, outDir, shape_model, size, faceSize):
             right = int(xmax + shortEdge * 1.5 / 2)
             top = int(ymin - shortEdge)
             bottom = int(ymax + shortEdge / 2)
+
+        if outBleed_x > 0:
+            left -= outBleed_x
+            right -= outBleed_x
+        if outBleed_y > 0:
+            top -= outBleed_y
 
         fullImg = np.zeros((size, size, 3))
         marginLeft = 0
