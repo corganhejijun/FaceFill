@@ -119,6 +119,10 @@ def headFromDir(inDir, outDir, shape_model, size, faceSize, outBleed_x=0, outBle
         fullFace = np.zeros((size, size, 3))
         xminFace, xmaxFace, yminFace, ymaxFace = getFace(detector, shapePredict, fullImg.astype(np.uint8))
         
+        if xminFace == None:
+            print("file %s can't get face in fullImg" % name)
+            continue
+
         if outBleed_x > 0:
             xminFace -= outBleed_x
             if xminFace < 0:
@@ -132,9 +136,6 @@ def headFromDir(inDir, outDir, shape_model, size, faceSize, outBleed_x=0, outBle
                 yminFace = 0
 
         fullFace[yminFace:ymaxFace, xminFace:xmaxFace, :] = fullImg[yminFace:ymaxFace, xminFace:xmaxFace, :]
-        if xminFace == None:
-            print("file %s can't get face in fullImg" % name)
-            continue
         combine = combineImg(fullImg, fullFace)
         outPath = os.path.join(outDir, str(count).zfill(6) + '.jpg')
         misc.imsave(outPath, combine)
