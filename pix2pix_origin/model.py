@@ -111,7 +111,7 @@ class pix2pix(object):
 
 
     def load_random_samples(self):
-        data = np.random.choice(glob('./datasets/{}/val/*.jpg'.format(self.dataset_name)), self.batch_size)
+        data = np.random.choice(glob('./datasets/{}/val_test/*.jpg'.format(self.dataset_name)), self.batch_size)
         sample = [load_data(sample_file) for sample_file in data]
 
         if (self.is_grayscale):
