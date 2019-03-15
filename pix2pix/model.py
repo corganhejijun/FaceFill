@@ -424,4 +424,4 @@ class pix2pix(object):
                 elapsed = (time.clock() - start)
                 testTime.append(elapsed*1000)
                 print("Time used:",elapsed)
-            print("mean: %f, standard: %f" % (np.mean(testTime), np.std(testTime, ddof=1)))
+            print("mean: %f, standard: %f" % (np.mean(testTime), np.var(testTime)))
