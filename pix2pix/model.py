@@ -181,13 +181,13 @@ class pix2pix(object):
             print(" [!] Load failed...")
 
         for epoch in xrange(args.epoch):
-            start = time.clock()
             data = glob('./datasets/{}/train/*.jpg'.format(self.dataset_name))
             #np.random.shuffle(data)
             # only use train_size images from total data
             batch_idxs = min(len(data), args.train_size) // self.batch_size
 
             for idx in xrange(0, batch_idxs):
+                start = time.clock()
                 batch_files = data[idx*self.batch_size:(idx+1)*self.batch_size]
                 batch = [load_data(batch_file, self.image_size, self.load_size) for batch_file in batch_files]
                 if (self.is_grayscale):
@@ -229,8 +229,8 @@ class pix2pix(object):
 
                 if np.mod(counter, 500) == 2:
                     self.save(args.checkpoint_dir, counter)
-            elapsed = (time.clock() - start)
-            print("Time used:",elapsed)
+                elapsed = (time.clock() - start)
+                print("Time used:",elapsed)
 
     def discriminator(self, image, name, size=64, y=None, reuse=False):
         with tf.variable_scope(name):
