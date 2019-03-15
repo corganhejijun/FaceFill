@@ -5,6 +5,7 @@ from glob import glob
 import tensorflow as tf
 import numpy as np
 from six.moves import xrange
+import time
 
 from ops import *
 from utils import *
@@ -180,6 +181,7 @@ class pix2pix(object):
             print(" [!] Load failed...")
 
         for epoch in xrange(args.epoch):
+            start = time.clock()
             data = glob('./datasets/{}/train/*.jpg'.format(self.dataset_name))
             #np.random.shuffle(data)
             # only use train_size images from total data
@@ -227,6 +229,8 @@ class pix2pix(object):
 
                 if np.mod(counter, 500) == 2:
                     self.save(args.checkpoint_dir, counter)
+            elapsed = (time.clock() - start)
+            print("Time used:",elapsed)
 
     def discriminator(self, image, name, size=64, y=None, reuse=False):
         with tf.variable_scope(name):
@@ -406,6 +410,7 @@ class pix2pix(object):
             print("file number: {}".format(len(sample_files)))
 
             for i, sample_image in enumerate(sample_images):
+                start = time.clock()
                 idx = i
                 fileName = sample_files[idx].split('/')[-1].split('.jpg')[0]
                 print("sampling image {}, {} of total {}".format(fileName, idx + (batch_count - 1) * max_size, len(sample_files_all)))
@@ -415,3 +420,5 @@ class pix2pix(object):
 
                 samples = self.sess.run(self.fake_B_sample_128, feed_dict={self.real_data: sample_image})
                 save_images(samples, [self.batch_size, 1], './{}_128/{}.png'.format(args.test_dir, fileName))
+                elapsed = (time.clock() - start)
+                print("Time used:",elapsed)

@@ -1,7 +1,16 @@
 gt_path = './images/GT';
-type = 'CSD';
-img_path = ['./images/',type,'_origin'];
-test_path = ['./images/',type,'_test'];
+GRUBCUT = 1;
+MM = 2;
+dataType = GRUBCUT;
+
+if dataType == MM
+    type = 'GC';
+    img_path = ['./images/',type,'_origin'];
+    test_path = ['./images/',type,'_test'];
+elseif dataType == GRUBCUT
+    img_path = './grabcut/origin_seg';
+    test_path = './grabcut/test_seg';
+end
 
 files = dir(gt_path);
 FPR = zeros(1,256);
@@ -13,10 +22,17 @@ for i = 1:length(files)
     if isequal(files(i).name, '.')||isequal(files(i).name, '..')||files(i).isdir
         continue;
     end
-    fileName = [files(i).name(1:length(files(i).name)-4),'_',type,'.png'];
-    img = imread(fullfile(img_path, fileName));
     gt = imread(fullfile(gt_path, files(i).name));
-    test = imread(fullfile(test_path, fileName));
+    if dataType == MM
+        fileName = [files(i).name(1:length(files(i).name)-4),'_',type,'.png'];
+        img = imread(fullfile(img_path, fileName));
+        test = imread(fullfile(test_path, fileName));
+    elseif dataType == GRUBCUT
+        fileName = files(i).name(1:length(files(i).name)-4);
+        img = imread(fullfile(img_path, [fileName, '.jpg']));
+        test = imread(fullfile(test_path, [fileName, '.png']));
+    end
+%% 将灰度分为256个阈值，根据不同阈值进行分割，之后计算AUC
     for j = 256:-1:1
         img_bi = img>j-1;
         gt_bi = gt>0;
@@ -50,11 +66,14 @@ for i = 1:length(files)
     end
     fprintf('file name is %s\n', files(i).name);
 end
-
+TPR = [1,TPR];
+FPR = [1,FPR];
+TPR_test = [1,TPR_test];
+FPR_test = [1,FPR_test];
 %%
 AUC = 0;
 AUC_test = 0;
-for i = 1:255
+for i = 1:256
     AUC = AUC + (TPR(i) + TPR(i+1))*(FPR(i)-FPR(i+1))/2;
     AUC_test = AUC_test + (TPR_test(i) + TPR_test(i+1))*(FPR_test(i)-FPR_test(i+1))/2;
 end
