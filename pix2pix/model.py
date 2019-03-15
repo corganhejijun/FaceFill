@@ -409,6 +409,7 @@ class pix2pix(object):
                 print(" [!] Load failed...")
             print("file number: {}".format(len(sample_files)))
 
+            testTime = []
             for i, sample_image in enumerate(sample_images):
                 start = time.clock()
                 idx = i
@@ -421,4 +422,6 @@ class pix2pix(object):
                 samples = self.sess.run(self.fake_B_sample_128, feed_dict={self.real_data: sample_image})
                 save_images(samples, [self.batch_size, 1], './{}_128/{}.png'.format(args.test_dir, fileName))
                 elapsed = (time.clock() - start)
+                testTime.append(elapsed*1000)
                 print("Time used:",elapsed)
+            print("mean: %f, standard: %f" % (np.mean(testTime), np.std(testTime, ddof=1)))
