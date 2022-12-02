@@ -413,7 +413,7 @@ class pix2pix(object):
             for i, sample_image in enumerate(sample_images):
                 start = time.clock()
                 idx = i
-                fileName = sample_files[idx].split('/')[-1].split('.jpg')[0]
+                fileName = sample_files[idx].split('\\')[-1].split('.jpg')[0]
                 print("sampling image {}, {} of total {}".format(fileName, idx + (batch_count - 1) * max_size, len(sample_files_all)))
 
                 samples = self.sess.run(self.fake_B_sample_64, feed_dict={self.real_data: sample_image})
